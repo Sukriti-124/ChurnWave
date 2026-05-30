@@ -1,16 +1,60 @@
-# ChurnWave — Telecom Customer Churn Predictor
+# ChurnWave 📡
+### Telecom Customer Churn Prediction
 
-A Streamlit app for predicting telecom customer churn using an ensemble of 4 ML models.
+> A production-style ML web app that predicts telecom customer churn using an ensemble of 4 machine learning models — built with Python, Scikit-learn, and Streamlit.
 
-## Repo Structure
+🔗 **[Live Demo → ChurnWave](https://churnwave.streamlit.app](https://churnwave-egohu7ca9tdeptxdpj5faf.streamlit.app/)**
+
+---
+
+## 🎯 What It Does
+
+ChurnWave helps telecom businesses identify customers at risk of churning before they leave. A customer service rep can enter a customer's profile and instantly get a churn probability score with actionable retention recommendations.
+
+---
+
+## ✨ Features
+
+- **🧙 4-Step Wizard Form** — Clean, guided single customer prediction (no overwhelming 30-field forms)
+- **📂 Bulk Prediction** — Upload a CSV/Excel of customers, get risk scores for all of them instantly
+- **📊 Model Insights** — Real feature importances, performance metrics, radar chart comparisons, dataset analytics
+- **🔀 Model Selector** — Toggle any of the 4 models on/off from the sidebar
+- **🤖 Ensemble Scoring** — Final prediction averages across all active models
+- **💡 Retention Recommendations** — Actionable next steps based on risk tier (High / Medium / Low)
+- **📥 Download Results** — Export bulk predictions as CSV or Excel
+
+---
+
+## 🧠 ML Models & Performance
+
+| Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
+|---|---|---|---|---|---|
+| Gradient Boosting | 83.3% | 71.1% | 62.6% | 66.6% | **0.887** ← best |
+| XGBoost | 83.0% | 69.8% | 63.6% | 66.6% | 0.886 |
+| Logistic Regression | 82.3% | 68.1% | 62.6% | 65.3% | 0.878 |
+| Random Forest | 81.6% | 69.5% | 54.8% | 61.3% | 0.873 |
+
+---
+
+## 🛠 Tech Stack
+
+| Layer | Tools |
+|---|---|
+| **Frontend** | Streamlit, Plotly, Custom CSS |
+| **ML Models** | Scikit-learn, XGBoost |
+| **Data** | Pandas, NumPy |
+| **Deployment** | Streamlit Community Cloud |
+| **Version Control** | Git, GitHub |
+
+---
+
+## 📁 Project Structure
 
 ```
-churnwave/
-├── main.py                     # Streamlit app (single entry point)
-├── zip_lookup.pkl              # Zip code → lat/long lookup (CA zips)
+ChurnWave/
+├── main.py                  # Streamlit app — single entry point
+├── zip_lookup.pkl           # Zip code → coordinates lookup
 ├── requirements.txt
-├── .gitignore
-├── README.md
 └── models/
     ├── random_forest_model.pkl
     ├── gradient_boosting_model.pkl
@@ -22,76 +66,40 @@ churnwave/
     └── model_performance.csv
 ```
 
-> **Note:** `telecom_customer_churn.csv` is excluded from the repo (gitignored).  
-> The Dataset Overview tab in Model Insights requires it. Place it in the project root if needed.
+---
+
+## 🔍 Key Engineering Decisions
+
+- **Wizard UI** — Broke 30 fields into 4 logical steps to reduce cognitive load
+- **Auto-derived fields** — Latitude/Longitude resolved from zip code; Total Revenue and Avg Monthly LD Charges calculated automatically — no redundant inputs
+- **Ensemble approach** — Averages probabilities across selected models for more robust predictions
+- **Real feature importances** — Pulled live from trained Random Forest and Gradient Boosting models, not hardcoded
 
 ---
 
-## Setup
+## 🚀 Run Locally
 
 ```bash
-git clone https://github.com/yourname/churnwave.git
-cd churnwave
+git clone https://github.com/Sukriti-124/ChurnWave.git
+cd ChurnWave
 
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+python3 -m venv venv
+source venv/bin/activate
 
 pip install -r requirements.txt
-
 streamlit run main.py
 ```
 
 ---
 
-## Features
+## 📊 Dataset
 
-### 🎯 Single Prediction (4-step wizard)
-| Step | Fields |
-|------|--------|
-| 1 · Demographics | Gender, Age, Married, Dependents, Referrals, Tenure, Zip Code |
-| 2 · Core Services | Phone, Multiple Lines, Internet, Unlimited Data, Avg GB/month |
-| 3 · Add-ons | Online Security, Backup, Device Protection, Tech Support, Streaming (TV/Movies/Music), Paperless Billing |
-| 4 · Financial | Monthly Charge, Total Charges, Total Refunds, Extra Data Charges, Total LD Charges |
+**IBM Telco Customer Churn Dataset** (extended version) — 7,043 customers, 30 features.  
+Source: [IBM Cognos Analytics Sample Data](https://www.kaggle.com/datasets/yeanzc/telco-customer-churn-ibm-dataset)
 
-Auto-derived (not asked): Latitude/Longitude (from zip), Avg Monthly LD Charges (Total LD ÷ Tenure), Total Revenue (Charges − Refunds + Extra + LD).
-
-### 📂 Bulk Prediction
-Upload a CSV/Excel → get risk scores for every row → download results.
-
-### 📊 Model Insights
-- Model performance comparison (accuracy, precision, recall, F1, ROC-AUC)
-- Real feature importances from trained RF and GB models
-- Dataset overview charts
-- Business recommendations by risk tier
-
+- **Churn rate:** 26.5% (1,869 / 7,043 customers)
+- **Target:** Predict whether a customer will churn based on their profile
+- **Features include:** Demographics, service subscriptions, billing history, geographic info
 ---
 
-## Models
-
-| Model | ROC-AUC |
-|-------|---------|
-| Gradient Boosting | **0.887** ← best |
-| Random Forest | ~0.88 |
-| XGBoost | ~0.87 |
-| Logistic Regression | ~0.84 |
-
-Ensemble = average of all active model probabilities.  
-Risk tiers: **High** ≥ 70% · **Medium** 35–70% · **Low** < 35%
-
----
-
-## Regenerating `zip_lookup.pkl`
-
-If you need to rebuild it from the raw dataset:
-
-```python
-import pandas as pd, pickle
-
-df = pd.read_csv('telecom_customer_churn.csv')
-lookup = (df.drop_duplicates('Zip Code')
-            .set_index('Zip Code')[['Latitude', 'Longitude', 'City']]
-            .to_dict(orient='index'))
-
-with open('zip_lookup.pkl', 'wb') as f:
-    pickle.dump(lookup, f)
-```
+*Built by Sukriti Srivastava*
