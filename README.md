@@ -3,7 +3,7 @@
 
 > A production-style ML web app that predicts telecom customer churn using an ensemble of 4 machine learning models — built with Python, Scikit-learn, and Streamlit.
 
-🔗 **[Live Demo → ChurnWave](https://churnwave.streamlit.app](https://churnwave-egohu7ca9tdeptxdpj5faf.streamlit.app/)**
+Demo - [ChurnWave](https://churnwave-egohu7ca9tdeptxdpj5faf.streamlit.app/)
 
 ---
 
